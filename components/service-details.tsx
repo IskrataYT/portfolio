@@ -36,8 +36,8 @@ export function ServiceDetails({ slug, content }: ServiceDetailsProps) {
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 bg-muted/30">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary">
+          <div className="flex flex-wrap items-center gap-4 mb-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary shrink-0">
               <Icon size={32} />
             </div>
             <div>

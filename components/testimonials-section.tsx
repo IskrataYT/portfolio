@@ -93,13 +93,15 @@ export function TestimonialsSection({ testimonials = [] }: TestimonialsSectionPr
                     >
                       <Card
                         className={cn(
-                          "group relative h-full overflow-hidden border border-white/10 bg-gradient-to-br p-6 sm:p-8 backdrop-blur",
+                          "group relative h-full min-h-[320px] overflow-hidden border border-white/10 bg-gradient-to-br px-5 py-6 sm:px-7 sm:py-7 backdrop-blur",
                           layout.glow,
                         )}
                       >
-                      <span className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-70" />
-                      <span className="absolute -right-12 top-1/2 h-36 w-36 rounded-full bg-primary/20 blur-3xl opacity-40 group-hover:opacity-70 transition-opacity" />
-                      <div className="flex flex-col gap-6 h-full">
+                      <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-x-5 sm:inset-x-7 top-0 h-px -translate-y-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-70"
+                      />
+                      <div className="relative z-10 flex h-full flex-col gap-4 pt-3 pb-3 sm:pt-4 sm:pb-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1 text-amber-300" aria-label={`${testimonial.rating} star rating`}>
                             {[...Array(testimonial.rating)].map((_, i) => (
@@ -118,12 +120,12 @@ export function TestimonialsSection({ testimonials = [] }: TestimonialsSectionPr
 
                         <blockquote
                           id={quoteId}
-                          className="relative text-base text-foreground/90 leading-relaxed pl-6"
+                          className="relative pl-6 text-base leading-relaxed text-foreground/90"
                           itemProp="reviewBody"
                         >
-                          <span className="absolute left-0 top-0 text-4xl text-primary/40 font-serif">“</span>
+                          <span className="absolute left-0 top-0 text-3xl text-primary/40 font-serif">“</span>
                           {testimonial.content}
-                          <span className="text-primary/40 font-serif">”</span>
+                          <span className="ml-1 text-3xl text-primary/30 font-serif align-middle">”</span>
                         </blockquote>
 
                         <div className="mt-auto flex items-center justify-between gap-4 pt-4 border-t border-white/5">
@@ -147,9 +149,6 @@ export function TestimonialsSection({ testimonials = [] }: TestimonialsSectionPr
                               </p>
                             </div>
                           </div>
-                          <span className="hidden sm:block text-xs font-mono uppercase tracking-[0.3em] text-white/60">
-                            Impact
-                          </span>
                         </div>
                       </div>
                       </Card>

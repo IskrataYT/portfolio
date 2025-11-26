@@ -1,13 +1,18 @@
 "use client"
 
 import Script from "next/script"
-import { HeroBackgroundCanvas } from "./hero-background-canvas"
+import dynamic from "next/dynamic"
 
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Code, Sparkles, Zap } from "lucide-react"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/language-context"
 import { Reveal } from "@/components/reveal"
+
+const HeroBackgroundCanvas = dynamic(
+  () => import("./hero-background-canvas").then((mod) => ({ default: mod.HeroBackgroundCanvas })),
+  { ssr: false, loading: () => null },
+)
 
 // HeroSection presents the landing hero with the animated background and CTA buttons.
 const FEATURE_PILLS = [

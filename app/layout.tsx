@@ -1,16 +1,17 @@
 import type React from "react"
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Analytics } from "@vercel/analytics/next"
 import { Inter, Bricolage_Grotesque } from "next/font/google"
 import Script from "next/script"
 import { LanguageProvider } from "@/contexts/language-context"
 import "./globals.css"
-import { cookies } from "next/headers"
 
 // RootLayout wires up fonts, theme defaults, analytics, and the language provider.
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-heading" })
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://iskrenminkov.com"
+const siteUpdatedAt = process.env.NEXT_PUBLIC_SITE_LAST_UPDATED ?? new Date().toISOString()
+
 const personSchema = {
   "@context": "https://schema.org",
   "@type": "Person",
@@ -25,6 +26,39 @@ const personSchema = {
   email: "hello@iskrenminkov.com",
   image: `${siteUrl}/icon-light-32x32.png`,
 }
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Iskren Minkov Studio",
+  url: siteUrl,
+  logo: `${siteUrl}/icon-light-32x32.png`,
+  sameAs: ["https://www.linkedin.com/in/iskrenminkov", "https://github.com/iskrenminkov"],
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      email: "hello@iskrenminkov.com",
+      contactType: "customer support",
+      availableLanguage: ["English", "Bulgarian"],
+    },
+  ],
+}
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Iskren Minkov",
+  url: siteUrl,
+  description:
+    "Iskren Minkov is a senior web developer and SEO strategist crafting lightning-fast, search-ready experiences.",
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${siteUrl}/?q={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
+}
+
+const structuredData = [personSchema, organizationSchema, websiteSchema]
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -49,6 +83,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "Iskren Minkov Studio",
     type: "website",
+    updatedTime: siteUpdatedAt,
     images: [{ url: `${siteUrl}/icon-light-32x32.png` }],
   },
   twitter: {
@@ -59,6 +94,14 @@ export const metadata: Metadata = {
       "High-performing, search-friendly web experiences built by Iskren Minkov.",
   },
   generator: "v0.app",
+  other: {
+    "og:updated_time": siteUpdatedAt,
+    "last-modified": siteUpdatedAt,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: [
       {
@@ -78,26 +121,28 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: [
+    { color: "#0c111d", media: "(prefers-color-scheme: dark)" },
+    { color: "#f7f7f2", media: "(prefers-color-scheme: light)" },
+  ],
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const cookieStore = cookies()
-  const storedLanguage =
-    typeof cookieStore?.get === "function" ? cookieStore.get("language")?.value : undefined
-  const initialLanguage = storedLanguage === "bg" ? "bg" : "en"
-
   return (
     <html lang="en" className={`${inter.variable} ${bricolage.variable} scroll-smooth dark`}>
       <body className={`font-sans antialiased`}>
-        <LanguageProvider initialLanguage={initialLanguage}>{children}</LanguageProvider>
+        <LanguageProvider>{children}</LanguageProvider>
         <Analytics />
         <Script
-          id="site-person-schema"
+          id="site-structured-data"
           type="application/ld+json"
           strategy="afterInteractive"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </body>
     </html>

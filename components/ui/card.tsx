@@ -52,6 +52,8 @@ function Card({
     )
   }, [])
 
+  const [glowEnabled, setGlowEnabled] = React.useState(false)
+
   const glowFillStyle = React.useMemo(
     () =>
       ({
@@ -187,6 +189,34 @@ function Card({
   )
 
   React.useEffect(() => {
+    const updateCapability = () => {
+      if (typeof window === "undefined") return
+      const prefersFinePointer = window.matchMedia("(pointer: fine)").matches
+      const prefersHover = window.matchMedia("(hover: hover)").matches
+      setGlowEnabled(prefersFinePointer && prefersHover)
+    }
+
+    updateCapability()
+
+    const handleResize = () => updateCapability()
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", handleResize)
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("resize", handleResize)
+      }
+    }
+  }, [])
+
+  React.useEffect(() => {
+    if (!glowEnabled) {
+      resetGlow()
+      resetCursorGlow()
+      return
+    }
+
     const handleWindowPointerMove = (event: PointerEvent) => {
       updateGlowFromPoint(event.clientX, event.clientY)
     }
@@ -206,32 +236,38 @@ function Card({
         animationFrameRef.current = undefined
       }
     }
-  }, [resetGlow, updateGlowFromPoint])
+  }, [glowEnabled, resetGlow, resetCursorGlow, updateGlowFromPoint])
 
   const handlePointerEnter = React.useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
-      updateGlowFromPoint(event.clientX, event.clientY)
-      updateCursorGlow(event.clientX, event.clientY)
+      if (glowEnabled) {
+        updateGlowFromPoint(event.clientX, event.clientY)
+        updateCursorGlow(event.clientX, event.clientY)
+      }
       onPointerEnter?.(event)
     },
-    [onPointerEnter, updateCursorGlow, updateGlowFromPoint],
+    [glowEnabled, onPointerEnter, updateCursorGlow, updateGlowFromPoint],
   )
 
   const handlePointerMove = React.useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
-      updateGlowFromPoint(event.clientX, event.clientY)
-      updateCursorGlow(event.clientX, event.clientY)
+      if (glowEnabled) {
+        updateGlowFromPoint(event.clientX, event.clientY)
+        updateCursorGlow(event.clientX, event.clientY)
+      }
       onPointerMove?.(event)
     },
-    [onPointerMove, updateCursorGlow, updateGlowFromPoint],
+    [glowEnabled, onPointerMove, updateCursorGlow, updateGlowFromPoint],
   )
 
   const handlePointerLeave = React.useCallback(
     (event: React.PointerEvent<HTMLDivElement>) => {
-      resetCursorGlow()
+      if (glowEnabled) {
+        resetCursorGlow()
+      }
       onPointerLeave?.(event)
     },
-    [onPointerLeave, resetCursorGlow],
+    [glowEnabled, onPointerLeave, resetCursorGlow],
   )
 
   return (

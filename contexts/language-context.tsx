@@ -17,15 +17,48 @@ type LanguageProviderProps = {
   initialLanguage?: Language
 }
 
+const isSupportedLanguage = (value: string | null): value is Language => value === "en" || value === "bg"
+
+const getBrowserLanguagePreference = (): Language | null => {
+  if (typeof window === "undefined") return null
+
+  const cookieMatch = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("language="))
+    ?.split("=")?.[1]
+
+  if (cookieMatch && isSupportedLanguage(cookieMatch)) {
+    return cookieMatch
+  }
+
+  const localStorageValue = window.localStorage.getItem("language")
+  if (isSupportedLanguage(localStorageValue)) {
+    return localStorageValue
+  }
+
+  return null
+}
+
 export function LanguageProvider({ children, initialLanguage = "en" }: LanguageProviderProps) {
   const [language, setLanguage] = useState<Language>(initialLanguage)
 
   useEffect(() => {
-    const saved = (typeof window !== "undefined" && (localStorage.getItem("language") as Language)) || null
-    if (saved && (saved === "en" || saved === "bg") && saved !== language) {
+    const saved = getBrowserLanguagePreference()
+    if (saved && saved !== language) {
       setLanguage(saved)
     }
   }, [language])
+
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === "language" && isSupportedLanguage(event.newValue)) {
+        setLanguage(event.newValue)
+      }
+    }
+
+    window.addEventListener("storage", handleStorage)
+    return () => window.removeEventListener("storage", handleStorage)
+  }, [])
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang)

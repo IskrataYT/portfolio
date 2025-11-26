@@ -9,6 +9,8 @@ import { Footer } from "@/components/footer"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { getProjects, getTestimonials } from "@/lib/contentful"
 
+export const revalidate = 300
+
 // HomePage assembles the marketing sections and fetches CMS-driven content.
 export default async function HomePage() {
   const [projects, testimonials] = await Promise.all([getProjects(), getTestimonials()])

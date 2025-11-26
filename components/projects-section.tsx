@@ -118,8 +118,34 @@ export function ProjectsSection({ projects = [] }: ProjectsSectionProps) {
                             </div>
                           )}
                         </div>
+                        <div className="space-y-4 lg:hidden">
+                          <InteractiveProjectMedia imageUrl={project.imageUrl} title={project.title} className="h-64" />
+                          {project.link ? (
+                            <Button size="lg" className="w-full gap-2" asChild>
+                              <Link
+                                href={project.link}
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                aria-label={`Open ${project.title} case study`}
+                                itemProp="url"
+                              >
+                                {t.projects.viewProject}
+                                <ExternalLink className="size-4" />
+                              </Link>
+                            </Button>
+                          ) : (
+                            <Button size="lg" disabled className="w-full">
+                              {t.projects.viewProject}
+                            </Button>
+                          )}
+                        </div>
                       </Card>
-                      <div className={cn("mt-4 flex", isReversed ? "justify-end" : "justify-start")}>
+                      <div
+                        className={cn(
+                          "mt-4 hidden lg:flex",
+                          isReversed ? "justify-end" : "justify-start",
+                        )}
+                      >
                         {project.link ? (
                           <Button size="lg" className="gap-2" asChild>
                             <Link
@@ -141,7 +167,7 @@ export function ProjectsSection({ projects = [] }: ProjectsSectionProps) {
                       </div>
                     </div>
 
-                    <div className={cn("relative lg:w-[45%]", isReversed && "lg:pr-6")}>
+                    <div className={cn("relative hidden lg:block lg:w-[45%]", isReversed && "lg:pr-6")}>
                       <InteractiveProjectMedia imageUrl={project.imageUrl} title={project.title} />
                     </div>
                   </div>
