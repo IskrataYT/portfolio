@@ -11,6 +11,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-heading" })
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://iskrenminkov.com"
 const siteUpdatedAt = process.env.NEXT_PUBLIC_SITE_LAST_UPDATED ?? new Date().toISOString()
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 
 const personSchema = {
   "@context": "https://schema.org",
@@ -138,6 +139,20 @@ export default function RootLayout({
       <body className={`font-sans antialiased`}>
         <LanguageProvider>{children}</LanguageProvider>
         <Analytics />
+        {gaMeasurementId ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga-init" strategy="afterInteractive">{`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${gaMeasurementId}');
+            `}</Script>
+          </>
+        ) : null}
         <Script
           id="site-structured-data"
           type="application/ld+json"
